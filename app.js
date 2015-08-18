@@ -7,7 +7,6 @@ var express = require('express'),
 // Create an express app
 var app = express();
 
-
 // Configure an express app
 app.configure(function(){
     app.set('port', process.env.PORT || 3000);

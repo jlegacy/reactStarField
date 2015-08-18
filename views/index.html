@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html>
   <head>
     <meta http-equiv='Content-type' content='text/html; charset=utf-8'>
     <title>Basic Example with JSX</title>
@@ -13,6 +14,7 @@
     <script src="../../build/JSXTransformer.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
    <body>
+</html>
 
    <script type="text/jsx">
    	/** @jsx React.DOM */
@@ -168,28 +170,51 @@
 	  }
 	});
 	
-	var TicTacToeCell = React.createClass({
+	var Stars = React.createClass({
+		
+			componentDidMount: function() {
+				this.animate();
+			},
+			
 			render : function () {
-				switch (this.props.items[this.props.num]) {
-				case 'X':
-					return <div className='cross cell-height' onClick={this.props.onClick.bind(this, this.props.num)} id={this.props.id}></div>;
-					break;
-				case 'O':
-					return <div className='circle cell-height' onClick={this.props.onClick.bind(this, this.props.num)} id={this.props.id}></div>;
-					break;
-				default:
-					return <div className='cell-height' onClick={this.props.onClick.bind(this, this.props.num)} id={this.props.id}></div>;
-				}
+				console.log('in render');
+				return(
+				<svg viewBox = "0 0 200 200">
+				{this.props.stars.map(function (n) {
+					return <circle cx = {n.x} cy = {n.y} r = "1" fill = "red"/>;
+				})}
+				 </svg>
+				);
+			},
+				
+			animate : function () {
+				var wprops = this.props.stars;
+				var indx=0;
+				setInterval(function () { {
+						wprops.map(function (n) {
+							
+							wprops[indx].x = n.x-1;
+							wprops[indx].y = n.y-1;
+							indx++;
+						})
+						
+						this.setState({stars : wprops});
+					}
+				}, 3000);
+				
+			//	this.setState();
 			}
-	});
+				
+		});
 	
 	
-	var TicTacToeApp = React.createClass({
-
+	var StarFieldApp = React.createClass({
+		
+	
 		getInitialState : function () {
 			var items = new Array(9);
+			var stars = [];
 			var youOrMe = Math.floor((Math.random() * 2) + 0);
-			console.log(youOrMe);
 			if (youOrMe == '0'){
 				items[Math.floor((Math.random() * 8) + 0)] = 'X';
 			}
@@ -198,9 +223,17 @@
 				alert('you go first');
 			}
 			
+			for(var i=0;i<500;i++)
+			{
+				x = Math.floor((Math.random() * 200) + 1)
+				y = Math.floor((Math.random() * 200) + 1)
+				stars.push({"x":x, "y":y});
+			}
+			
 			return {
 				scores : [],
 				items : items,
+				stars : stars,
 				message : '',
 				winner:''
 			};
@@ -208,20 +241,14 @@
 		
 	  render: function() {
 		return (
-		<div>
-		 
-		 <div id="container">
-		 
-		 <TicTacToeDrawGrid items={this.state.items}/>
-		 
+		 <div style={{border: '1px solid red', background:'black'}}>
+			<Stars stars={this.state.stars}/>
 		</div>
-		 
-		 </div>
 		);
 	  }
 	});
 	
-	React.render(<TicTacToeApp/>, document.body);
+	React.render(<StarFieldApp/>, document.body);
 	
 	
     </script>
