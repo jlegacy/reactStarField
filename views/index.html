@@ -171,38 +171,57 @@
 	});
 	
 	var Stars = React.createClass({
-		
+			
 			componentDidMount: function() {
 				this.animate();
 			},
 			
 			render : function () {
-				console.log('in render');
+				var indx=0;
 				return(
+			
 				<svg viewBox = "0 0 200 200">
 				{this.props.stars.map(function (n) {
-					return <circle cx = {n.x} cy = {n.y} r = "1" fill = "red"/>;
+					return <circle cx = {n.x} cy = {n.y} r = ".3" fill = "red"/>;
 				})}
 				 </svg>
+			
 				);
 			},
-				
-			animate : function () {
+			
+			reanimate : function (state) {
+				var indx = 0;
 				var wprops = this.props.stars;
-				var indx=0;
-				setInterval(function () { {
-						wprops.map(function (n) {
-							
-							wprops[indx].x = n.x-1;
-							wprops[indx].y = n.y-1;
-							indx++;
-						})
-						
-						this.setState({stars : wprops});
-					}
-				}, 3000);
+				wprops.map(function (n) {
+					wprops[indx].x = n.x + .05;
+					wprops[indx].y = n.y + .1;
+					indx++;
+				})
+				state.setState({
+					stars : wprops
+				});
+			},
+
+			animate : function () {
+				var worker = new Worker('/js/doWork2.js');
+	
+				worker.postMessage({
+					'cmd' : 'start',
+					'msg' : 'Hi'
+				});
 				
-			//	this.setState();
+				worker.postMessage({
+					'cmd' : 'updateStars',
+					'data' : this.props.stars
+				});
+
+				worker.onmessage = function (e) {
+					console.log('completed Function');
+				};
+
+				//setInterval(this.reanimate, 1, this);
+
+
 			}
 				
 		});
@@ -219,11 +238,7 @@
 				items[Math.floor((Math.random() * 8) + 0)] = 'X';
 			}
 			
-			if (youOrMe == '1'){
-				alert('you go first');
-			}
-			
-			for(var i=0;i<500;i++)
+			for(var i=0;i<100;i++)
 			{
 				x = Math.floor((Math.random() * 200) + 1)
 				y = Math.floor((Math.random() * 200) + 1)
@@ -241,7 +256,7 @@
 		
 	  render: function() {
 		return (
-		 <div style={{border: '1px solid red', background:'black'}}>
+		 <div style={{border: '1px solid red', background:'white'}}>
 			<Stars stars={this.state.stars}/>
 		</div>
 		);
