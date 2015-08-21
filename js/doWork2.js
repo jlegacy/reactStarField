@@ -1,9 +1,11 @@
 self.addEventListener('message', function (e) {
 	var data = e.data;
+	var xdata = [];
 	switch (data.cmd) {
-	case 'updateGraphics':
+	case 'updateStars':
 		console.log('in graphics');
-		self.postMessage(wprops(data.data));
+		xdata = updateGraphics(data.data);
+		self.postMessage({'wprops':xdata});
 		break;
 	case 'start':
 		console.log('in start');
@@ -20,7 +22,7 @@ self.addEventListener('message', function (e) {
 	};
 }, false);
 
-function upDateGraphics(data) {
+function updateGraphics(data) {
 	var indx = 0;
 	var wprops = data;
 	wprops.map(function (n) {

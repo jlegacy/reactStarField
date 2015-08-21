@@ -14,7 +14,11 @@
     <script src="../../build/JSXTransformer.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
    <body>
-</html>
+	<video id="myVideo" width="320" height="176">
+	  <source src="mov_bbb.mp4" type="video/mp4">
+	  <source src="mov_bbb.ogg" type="video/ogg">
+	  Your browser does not support HTML5 video.
+	</video>
 
    <script type="text/jsx">
    	/** @jsx React.DOM */
@@ -170,64 +174,81 @@
 	  }
 	});
 	
+	var ShowHeader = React.createClass({
+
+			render : function () {
+				return(
+				<div>
+					<div id="header">
+					{this.props.header}
+					</div>
+				</div>
+				);
+			},
+
+		});
+	
 	var Stars = React.createClass({
-			
+
 			componentDidMount: function() {
 				this.animate();
 			},
 			
+			testClick: function(e) {
+				if (e.target.id)
+				{
+					var x = e.target.id - 1;
+					this.props.stars[x].fill = "green";
+				}
+			},
+			
 			render : function () {
 				var indx=0;
+				var cIndx;
 				return(
 			
-				<svg viewBox = "0 0 200 200">
-				{this.props.stars.map(function (n) {
-					return <circle cx = {n.x} cy = {n.y} r = ".3" fill = "red"/>;
+				<svg viewBox = "0 0 200 200" onClick={this.testClick}>
+				{this.props.stars.map(function (n) { 
+					indx++;
+					return <circle cx = {n.x} cy = {n.y} r = "3" id={indx} fill = {n.fill}/>; 
+					
 				})}
 				 </svg>
 			
 				);
 			},
 			
-			reanimate : function (state) {
-				var indx = 0;
+			reanimate : function (state)
+			{
+				var indx=0;
 				var wprops = this.props.stars;
-				wprops.map(function (n) {
-					wprops[indx].x = n.x + .05;
-					wprops[indx].y = n.y + .1;
-					indx++;
-				})
+				this.props.stars.map(function (n) {
+							wprops[indx].x = n.x+0.01;
+							wprops[indx].y = n.y+0.01;
+							
+							if (wprops[indx].x > 200)
+							{
+								wprops[indx].x = 0;
+							}
+							if (wprops[indx].y > 200)
+							{
+								wprops[indx].y = 0;
+							}
+							indx++;
+						})
 				state.setState({
-					stars : wprops
-				});
+		 					stars : wprops,
+		 				});
 			},
-
-			animate : function () {
-				var worker = new Worker('/js/doWork2.js');
-	
-				worker.postMessage({
-					'cmd' : 'start',
-					'msg' : 'Hi'
-				});
 				
-				worker.postMessage({
-					'cmd' : 'updateStars',
-					'data' : this.props.stars
-				});
-
-				worker.onmessage = function (e) {
-					console.log('completed Function');
-				};
-
-				//setInterval(this.reanimate, 1, this);
-
-
+			animate : function () {
+				setInterval(this.reanimate, 1, this);
 			}
 				
 		});
 	
 	
-	var StarFieldApp = React.createClass({
+	var StarFieldApp = React.createClass({ 
 		
 	
 		getInitialState : function () {
@@ -238,11 +259,11 @@
 				items[Math.floor((Math.random() * 8) + 0)] = 'X';
 			}
 			
-			for(var i=0;i<100;i++)
+			for(var i=0;i<2;i++)
 			{
 				x = Math.floor((Math.random() * 200) + 1)
 				y = Math.floor((Math.random() * 200) + 1)
-				stars.push({"x":x, "y":y});
+				stars.push({"x":x, "y":y, 'fill':'red'});
 			}
 			
 			return {
@@ -250,13 +271,17 @@
 				items : items,
 				stars : stars,
 				message : '',
-				winner:''
+				winner:'',
+				header:'Good Luck Grasshopper'
 			};
 		},
+		
+		
 		
 	  render: function() {
 		return (
 		 <div style={{border: '1px solid red', background:'white'}}>
+			<ShowHeader header={this.state.header}/>
 			<Stars stars={this.state.stars}/>
 		</div>
 		);
