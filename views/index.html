@@ -22,174 +22,62 @@
 
    <script type="text/jsx">
    	/** @jsx React.DOM */
-	var TicTacToeDrawGrid = React.createClass({
-		
-	  checkWinning: function(propsCopy)
-	  {
-		  var found = false;
-		  var patterns = [
-		  {x:'0',y:'1', z:'2'},
-		  {x:'3',y:'4', z:'5'},
-		  {x:'6',y:'7', z:'8'},
-		  
-		  {x:'0',y:'3', z:'6'},
-		  {x:'1',y:'4', z:'7'},
-		  {x:'2',y:'5', z:'8'},
-		  
-		  {x:'0',y:'4', z:'8'},
-		  {x:'2',y:'4', z:'6'}		
-		  ];
-		  
-		  patterns.map(function (item) {
-	   		if (propsCopy[item.x] && propsCopy[item.y] && propsCopy[item.z]) {
-				
-	   			if (propsCopy[item.x] == propsCopy[item.y] && propsCopy[item.x] == propsCopy[item.z]) {
-	   				found = true
-	   			}
-	   		}
-	   	})
-		return found;
-		  
-	  },
-		
-	  winningMoves: function(x){
-		  
-		 var propsCopy;
-		 var block = false;
-		 var meWin = false;
-		 var youWin = false;
-		 
-		 //Check Current Win
-		 propsCopy = this.props.items.concat();
-		 if (this.checkWinning(propsCopy)) {
-		 	youWin = true;
-		 }
-		 
 
-		 if (!youWin) {
-		 	for (var x = 0; x < 9; x++) {
-		 		propsCopy = this.props.items.concat();
-
-		 		if (!propsCopy[x]) {
-		 			propsCopy[x] = 'X';
-		 			if (this.checkWinning(propsCopy)) {
-		 				meWin = true;
-		 				this.props.items[x] = 'X';
-		 				this.setState({
-		 					items : this.props.items
-		 				});
-		 				break;
-		 			}
-		 		}
-		 	}
-		 }
-
-		 if (!meWin) {
-		 	//Check Block
-		 	for (var x = 0; x < 9; x++) {
-		 		propsCopy = this.props.items.concat();
-
-		 		if (!propsCopy[x]) {
-		 			propsCopy[x] = 'O';
-		 			if (this.checkWinning(propsCopy)) {
-		 				block = true;
-		 				this.props.items[x] = 'X';
-		 				this.setState({
-		 					items : this.props.items
-		 				});
-		 				break;
-		 			}
-		 		}
-		 	}
-
-		 }
-
-		 if (!block && !meWin && !youWin) {
-		 	this.computerMove();
-		 }
-
-		 if (meWin) {
-		 	alert('I win');
-		 }
-
-		 if (youWin) {
-		 	alert('You win');
-		 }
-		 },
-
-		 computerMove : function () {
-		 	for (var x = 0; x < 9; x++) {
-		 		if (!this.props.items[x]) {
-		 			this.props.items[x] = 'X'
-		 				this.setState({
-		 					items : this.props.items
-		 				});
-		 			break;
-		 		}
-		 	}
-		 },
-
-		 handleClick : function (e) {
-		 	if (!this.props.items[e]) {
-		 		this.props.items[e] = 'O'
-		 			this.setState({
-		 				items : this.props.items
-		 			});
-		 		this.winningMoves('Me');
-		 	}
-		 },
-		
-	
-	  render: function() {
-		return (
-		<div>
-		
-			<div id="row1">
-
-				 <TicTacToeCell onClick={this.handleClick} items={this.props.items} num={'0'} id={'left'}/>
-				 <TicTacToeCell onClick={this.handleClick} items={this.props.items} num={'1'} id={'middle'}/>
-				 <TicTacToeCell onClick={this.handleClick} items={this.props.items} num={'2'} id={'right'}/>
-
-			</div>
-			
-			<div id="row2">
-
-				 <TicTacToeCell onClick={this.handleClick} items={this.props.items} num={'3'} id={'left'}/>
-				 <TicTacToeCell onClick={this.handleClick} items={this.props.items} num={'4'} id={'middle'}/>
-				 <TicTacToeCell onClick={this.handleClick} items={this.props.items} num={'5'} id={'right'}/>
-
-			</div>
-			
-			<div id="row3">
-
-				 <TicTacToeCell onClick={this.handleClick} items={this.props.items} num={'6'} id={'left'}/>
-				 <TicTacToeCell onClick={this.handleClick} items={this.props.items} num={'7'} id={'middle'}/>
-				 <TicTacToeCell onClick={this.handleClick} items={this.props.items} num={'8'} id={'right'}/>
-
-			</div>
-		
-		</div>
-		 
-		);
-	  }
-	});
-	
 	var ShowHeader = React.createClass({
 
-			animateHeader: function(text){
-				this.props.header = text;
+			updateHeader: function(text){
+				this.setState({header:text});
 			},
 			
 			render : function () {
-				console.log('rerender header');
 				return(
 				<div>
 					<div id="header">
-					{this.props.header}
+					{this.state.header}
 					</div>
+					<Stars stars={this.props.stars} updateHeader={this.updateHeader} />
+					<FiringBar/>
 				</div>
+				
 				);
 			},
+			
+			getInitialState : function () {
+			
+			return {
+				header : 'Initial Load'
+			};
+		},
+			
+
+		});
+		
+	var FiringBar = React.createClass({
+
+			updateBar: function(text){
+				this.setState({header:text});
+			},
+			
+			render : function () {
+				return(
+				<div>
+					<div className='turret' height="35px;" width="35px;" id="turret">
+					FiringBar
+					</div>
+				</div>
+				
+				);
+			},
+			
+		
+			
+			getInitialState : function () {
+			
+			return {
+				
+			};
+		},
+			
 
 		});
 	
@@ -199,13 +87,27 @@
 				this.animate();
 			},
 			
-			testClick: function(e) {
-				if (e.target.id)
+			checkWin: function(e)
+			{
+				var filteredList  = _.where(this.props.stars, {fill:"red"});
+				if ((filteredList.length === 0) || (!filteredList))
 				{
+					return true;
+				}
+				
+				return false;
+			},
+			
+			testClick : function (e) {
+				if (e.target.id) {
 					var x = e.target.id - 1;
-					this.props.stars[x].fill = "green";
-					var myInputs = React.createElement(ShowHeader);
-					myInputs.animateHeader('test');
+					//this.props.stars[x].fill = "green";
+					this.props.stars = this.props.stars.splice(x, 1);
+
+					this.props.updateHeader('Good shot!!');
+
+				} else {
+					this.props.updateHeader('You suck!!');
 				}
 			},
 			
@@ -214,44 +116,44 @@
 				var cIndx;
 				return(
 			
-				<svg viewBox = "0 0 200 200" onClick={this.testClick}>
+				<svg height="775px" viewBox = "0 0 200 200" onClick={this.testClick}>
 				{this.props.stars.map(function (n) { 
 					indx++;
 					return <circle cx = {n.x} cy = {n.y} r = "3" id={indx} fill = {n.fill}/>; 
-					
 				})}
 				 </svg>
-			
 				);
 			},
 			
 			reanimate : function (state)
 			{
-				var indx=0;
+				var indx = 0;
 				var wprops = this.props.stars;
 				this.props.stars.map(function (n) {
-							wprops[indx].x = n.x+0.01;
-							wprops[indx].y = n.y+0.01;
-							
-							if (wprops[indx].x > 200)
-							{
-								wprops[indx].x = 0;
-							}
-							if (wprops[indx].y > 200)
-							{
-								wprops[indx].y = 0;
-							}
-							indx++;
-						})
+					wprops[indx].x = n.x + 0.05;
+					wprops[indx].y = n.y + 0.05;
+
+					if (wprops[indx].x > 200) {
+						wprops[indx].x = 0;
+					}
+					if (wprops[indx].y > 200) {
+						wprops[indx].y = 0;
+					}
+					indx++;
+				})
 				state.setState({
-		 					stars : wprops,
-		 				});
+					stars : wprops
+				});
+				
+				if (this.checkWin()) {
+						this.props.updateHeader('You Win!!');
+					}
 			},
 				
 			animate : function () {
 				setInterval(this.reanimate, 1, this);
 			}
-				
+			
 		});
 	
 	
@@ -259,18 +161,24 @@
 		
 	
 		getInitialState : function () {
-			var items = new Array(9);
+			var items = [];
 			var stars = [];
 			var youOrMe = Math.floor((Math.random() * 2) + 0);
 			if (youOrMe == '0'){
 				items[Math.floor((Math.random() * 8) + 0)] = 'X';
 			}
 			
-			for(var i=0;i<2;i++)
-			{
-				x = Math.floor((Math.random() * 200) + 1)
-				y = Math.floor((Math.random() * 200) + 1)
-				stars.push({"x":x, "y":y, 'fill':'red'});
+			for (var i = 0; i < 5; i++) {
+				for (var z = 1; z < 12; z++) {
+					
+					x = z * 10;
+						y = i * 10;
+						stars.push({
+							"x" : x,
+							"y" : y,
+							'fill' : 'red'
+						});
+				}
 			}
 			
 			return {
@@ -278,21 +186,25 @@
 				items : items,
 				stars : stars,
 				message : '',
-				winner:'',
-				header:'Good Luck Grasshopper'
+				winner:''
 			};
 		},
 		
-		
+		 handleKeyDown: function(e) {
+            var ENTER = 13;
+            alert(e);
+
+        },
 		
 	  render: function() {
 		return (
-		 <div style={{border: '1px solid red', background:'white'}}>
-			<ShowHeader header={this.state.header}/>
-			<Stars stars={this.state.stars}/>
+		 <div style={{width: '775px;', border: '1px solid red', background:'white'}}>
+			<ShowHeader stars={this.state.stars}/>
 		</div>
 		);
-	  }
+	  },
+	  
+	 
 	});
 	
 	React.render(<StarFieldApp/>, document.body);

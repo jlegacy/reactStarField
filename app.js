@@ -25,6 +25,7 @@ app.configure(function(){
 	app.use('/src',  express.static(__dirname + '/src'));
 	app.use('/build',  express.static(__dirname + '/build'));
 	app.use('/shared',  express.static(__dirname + '/shared'));
+	app.use('/images',  express.static(__dirname + '/images'));
 	app.use('/js',  express.static(__dirname + '/js'));
 	app.use('/css',  express.static(__dirname + '/css'));
 	app.use('/scripts',  express.static(__dirname + '/scripts')); 
