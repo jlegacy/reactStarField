@@ -176,7 +176,12 @@
 	
 	var ShowHeader = React.createClass({
 
+			animateHeader: function(text){
+				this.props.header = text;
+			},
+			
 			render : function () {
+				console.log('rerender header');
 				return(
 				<div>
 					<div id="header">
@@ -199,6 +204,8 @@
 				{
 					var x = e.target.id - 1;
 					this.props.stars[x].fill = "green";
+					var myInputs = React.createElement(ShowHeader);
+					myInputs.animateHeader('test');
 				}
 			},
 			
