@@ -24,68 +24,48 @@
    	/** @jsx React.DOM */
 
 	var ShowHeader = React.createClass({
-
-			updateHeader: function(text){
-				this.setState({header:text});
-			},
-			
+		
 			render : function () {
 				return(
 				<div>
 					<div id="header">
-					{this.state.header}
+					{this.props.starsHeader}
 					</div>
-					<Stars stars={this.props.stars} updateHeader={this.updateHeader} />
-					<FiringBar/>
+					<Stars stars={this.props.stars} updateHeader={this.props.updateHeader} />
+					<FiringBar properties={this.props.properties} moveFiringBar={this.props.moveFiringBar}/>
 				</div>
 				
 				);
-			},
-			
-			getInitialState : function () {
-			
-			return {
-				header : 'Initial Load'
-			};
-		},
-			
-
-		});
+			}
+	});
 		
 	var FiringBar = React.createClass({
-
-			updateBar: function(text){
-				this.setState({header:text});
-			},
 			
+			componentWillMount : function () {
+				document.addEventListener("keydown", this.props.moveFiringBar, false);
+			},
+
 			render : function () {
-				return(
+				console.log('firing bar render' +  this.props);
+				return (
 				<div>
-					<div className='turret' height="35px;" width="35px;" id="turret">
-					FiringBar
-					</div>
+					<div style={{left:this.props.properties.position}} className='turret' height={this.props.properties.height} width={this.props.properties.width} id="turret">&nbsp;
+					<div className="turret" style={{bottom:this.props.properties.position}} >test</div>
 				</div>
-				
+				</div>
 				);
-			},
-			
-		
-			
-			getInitialState : function () {
-			
-			return {
-				
-			};
-		},
-			
-
+			}
+	
 		});
 	
 	var Stars = React.createClass({
+		
 
 			componentDidMount: function() {
 				this.animate();
 			},
+
+			
 			
 			checkWin: function(e)
 			{
@@ -103,15 +83,16 @@
 					var x = e.target.id - 1;
 					//this.props.stars[x].fill = "green";
 					this.props.stars = this.props.stars.splice(x, 1);
-
 					this.props.updateHeader('Good shot!!');
 
 				} else {
 					this.props.updateHeader('You suck!!');
 				}
+				
 			},
 			
 			render : function () {
+			//	console.log('in stars render')
 				var indx=0;
 				var cIndx;
 				return(
@@ -154,6 +135,7 @@
 				setInterval(this.reanimate, 1, this);
 			}
 			
+			
 		});
 	
 	
@@ -186,24 +168,66 @@
 				items : items,
 				stars : stars,
 				message : '',
-				winner:''
+				winner:'',
+				barx:'',
+				bary:'',
+				starsHeader:'',
+				position: 0,
+				shots[]
+				
 			};
 		},
 		
-		 handleKeyDown: function(e) {
-            var ENTER = 13;
-            alert(e);
+		updateHeader: function(text){
+			this.setState({starsHeader:text});
+		},
+		
+		
+		fireShot : function (e){
+			var shots = this.props.shots;
+			
+			shots.push({shot:x, position:y});
+			
+			do
+			{
+			_.each(shots, function (someThing) {
+				doSomeWorkOn(someThing);
+			});
+			while(shots.length > 0);
+			}
+			
+			
+			
+		},
+		
+				
+		moveFiringBar : function (e) {
 
-        },
+			if (e.keyCode == '39') {
+					position = position + 5;
+					this.setState({position : position});
+				}
+
+				if (e.keyCode == '37') {
+					position = position - 5;
+					this.setState({position : position});
+				}
+
+				if (e.keyCode == '32') {
+					this.fireShot();
+				};
+
+			},
+		
+		
 		
 	  render: function() {
 		return (
 		 <div style={{width: '775px;', border: '1px solid red', background:'white'}}>
-			<ShowHeader stars={this.state.stars}/>
+			<ShowHeader properties={this.state} stars={this.state.stars} starsHeader={this.state.starsHeader} updateHeader={this.updateHeader} moveFiringBar={this.moveFiringBar}/>
 		</div>
 		);
-	  },
-	  
+	  }
 	 
 	});
 	
