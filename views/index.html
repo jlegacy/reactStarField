@@ -4,7 +4,7 @@
     <meta http-equiv='Content-type' content='text/html; charset=utf-8'>
     <title>Basic Example with JSX</title>
     <link rel="stylesheet" href="../shared/css/base.css" />
-	 <link rel="stylesheet" href="./css/tictactoe.css" />
+	<link rel="stylesheet" href="./css/tictactoe.css" />
   </head>
  
     <h1>Basic Example with JSX</h1>
@@ -13,12 +13,9 @@
     <script src="../../build/react.js"></script>
     <script src="../../build/JSXTransformer.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+	 <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
    <body>
-	<video id="myVideo" width="320" height="176">
-	  <source src="mov_bbb.mp4" type="video/mp4">
-	  <source src="mov_bbb.ogg" type="video/ogg">
-	  Your browser does not support HTML5 video.
-	</video>
 
    <script type="text/jsx">
    	/** @jsx React.DOM */
@@ -46,11 +43,9 @@
 			},
 
 			render : function () {
-				console.log('firing bar render' +  this.props);
 				return (
 				<div>
 					<div style={{left:this.props.properties.position}} className='turret' height={this.props.properties.height} width={this.props.properties.width} id="turret">&nbsp;
-					<div className="turret" style={{bottom:this.props.properties.position}} >test</div>
 				</div>
 				</div>
 				);
@@ -78,29 +73,25 @@
 				return false;
 			},
 			
-			testClick : function (e) {
-				if (e.target.id) {
-					var x = e.target.id - 1;
-					//this.props.stars[x].fill = "green";
-					this.props.stars = this.props.stars.splice(x, 1);
-					this.props.updateHeader('Good shot!!');
 
-				} else {
-					this.props.updateHeader('You suck!!');
-				}
-				
-			},
-			
 			render : function () {
 			//	console.log('in stars render')
 				var indx=0;
 				var cIndx;
 				return(
 			
-				<svg height="775px" viewBox = "0 0 200 200" onClick={this.testClick}>
+				<svg height="775px" viewBox = "0 0 200 200">
 				{this.props.stars.map(function (n) { 
 					indx++;
-					return <circle cx = {n.x} cy = {n.y} r = "3" id={indx} fill = {n.fill}/>; 
+					if (n.type === 'target')
+					{
+						return <circle cx = {n.x} cy = {n.y} r = "3" id={indx} fill = {n.fill}/>; 
+					}
+					
+					if (n.type === 'bullet')
+					{
+						return <circle cx = {n.x} cy = {n.y} r = "3" id={indx} fill = {n.fill}/>; 
+					}
 				})}
 				 </svg>
 				);
@@ -110,7 +101,10 @@
 			{
 				var indx = 0;
 				var wprops = this.props.stars;
+				var bullets = [];
 				this.props.stars.map(function (n) {
+					if (n.type === 'target')
+					{
 					wprops[indx].x = n.x + 0.05;
 					wprops[indx].y = n.y + 0.05;
 
@@ -118,10 +112,53 @@
 						wprops[indx].x = 0;
 					}
 					if (wprops[indx].y > 200) {
-						wprops[indx].y = 0;
+						wprops[indx].y = 0; 
+					}
+					}
+					
+					if (n.type === 'bullet') {
+						wprops[indx].y = n.y - 0.5;  
+						if (wprops[indx].y < 0) {
+							wprops[indx] = wprops.splice(indx, 1);
+						}
+					
+
 					}
 					indx++;
 				})
+				
+				//Check Hits//
+					indx = 0;
+					var indx2 = 0;
+					wprops.map(function (n) {  
+						//Move Targets//
+						if (n.type === 'bullet') {
+							indx2 = 0;
+							wprops.map(function (j) {
+								//Move Targets//
+								if (j.type === 'target') {
+
+									var d = Math.sqrt(((j.x - n.x) * (j.x - n.x)) + ((j.y - n.y) * (j.y - n.y)));
+									if (d < 5) {
+										
+										wprops[indx] = wprops.splice(indx, 1);
+										wprops[indx2] = wprops.splice(indx2, 1);
+									}
+								}
+								indx2++;
+
+							});
+
+						}
+
+						indx++;
+
+					});
+				
+				
+				
+				
+				
 				state.setState({
 					stars : wprops
 				});
@@ -151,13 +188,14 @@
 			}
 			
 			for (var i = 0; i < 5; i++) {
-				for (var z = 1; z < 12; z++) {
+				for (var z = 1; z < 5; z++) {
 					
 					x = z * 10;
 						y = i * 10;
 						stars.push({
 							"x" : x,
 							"y" : y,
+							"type" : 'target',
 							'fill' : 'red'
 						});
 				}
@@ -173,7 +211,7 @@
 				bary:'',
 				starsHeader:'',
 				position: 0,
-				shots[]
+				shots : []
 				
 			};
 		},
@@ -183,27 +221,29 @@
 		},
 		
 		
-		fireShot : function (e){
-			var shots = this.props.shots;
-			
-			shots.push({shot:x, position:y});
-			
-			do
-			{
-			_.each(shots, function (someThing) {
-				doSomeWorkOn(someThing);
+		
+		fireShot : function (position) {
+			var x = $('#turret').attr('style');
+			var posX = x.split(":");
+			console.log(position * .27);
+			var stars = this.state.stars;
+			stars.push({
+				"x" : (position * .27),
+				"y" : 200,
+				"type" : 'bullet',
+				'fill' : 'blue'
 			});
-			while(shots.length > 0);
-			}
-			
-			
-			
+			this.setState({stars:stars}); 
 		},
 		
-				
+	
 		moveFiringBar : function (e) {
 
+			var position = this.state.position;
+			
+			
 			if (e.keyCode == '39') {
+				
 					position = position + 5;
 					this.setState({position : position});
 				}
@@ -214,7 +254,7 @@
 				}
 
 				if (e.keyCode == '32') {
-					this.fireShot();
+					this.fireShot(position);
 				};
 
 			},
